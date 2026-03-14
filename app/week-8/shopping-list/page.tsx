@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import NewItem from "./new-item";
 import ItemList from "./item-list";
 import MealIdeas from "./meal-ideas";
 import itemsData from "./items.json";
 import { useUserAuth } from "../_utils/auth-context";
+import { useRouter } from "next/navigation";
 
 type ItemType = {
   id: string;
@@ -16,18 +17,16 @@ type ItemType = {
 
 export default function Page() {
   const { user, firebaseSignOut } = useUserAuth();
+  const router = useRouter();
 
   const [items, setItems] = useState<ItemType[]>(itemsData as ItemType[]);
   const [selectedItemName, setSelectedItemName] = useState("");
 
-  if (!user) {
-    return (
-      <main className="p-6">
-        <h1 className="text-2xl font-bold mb-4">Shopping List</h1>
-        <p>You must be logged in to view this page.</p>
-      </main>
-    );
-  }
+  useEffect(() => {
+    if (!user) {
+      router.push("/week-8");
+    }
+  }, [user, router]);
 
   function handleAddItem(newItem: { name: string; quantity: number; category: string }) {
     const itemToAdd: ItemType = {
@@ -53,9 +52,14 @@ export default function Page() {
   async function handleLogout() {
     try {
       await firebaseSignOut();
+      router.push("/week-8");
     } catch (error) {
       console.log(error);
     }
+  }
+
+  if (!user) {
+    return null;
   }
 
   return (
