@@ -24,7 +24,7 @@ export default function Week8Page() {
 
   return (
     <main className="p-6 space-y-4">
-      <h1 className="text-2xl font-bold">Week 8 - Firebase Auth</h1>
+      <h1 className="text-2xl font-bold">Week 10 - Shopping List with Firestore</h1>
 
       {!user ? (
         <div className="space-y-4">
@@ -51,7 +51,7 @@ export default function Week8Page() {
 
           <div>
             <Link
-              href="/week-8/shopping-list"
+              href="/week-10/shopping-list"
               className="text-blue-500 underline"
             >
               Go to Shopping List

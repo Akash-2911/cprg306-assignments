@@ -25,7 +25,7 @@ export default function Page() {
   // 🔹 Redirect if not logged in
   useEffect(() => {
     if (!user) {
-      router.push("/week-8");
+      router.push("/week-10");
     }
   }, [user, router]);
 
@@ -78,7 +78,7 @@ export default function Page() {
   // 🔹 Logout + redirect
   async function handleLogout() {
     await firebaseSignOut();
-    router.push("/week-8");
+    router.push("/week-10");
   }
 
   // 🔹 Prevent UI flash
