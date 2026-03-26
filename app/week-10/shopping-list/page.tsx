@@ -16,20 +16,18 @@ type ItemType = {
 };
 
 export default function Page() {
-  const { user, firebaseSignOut } = useUserAuth();
+  const { user, loading, firebaseSignOut } = useUserAuth();
   const router = useRouter();
 
   const [items, setItems] = useState<ItemType[]>([]);
   const [selectedItemName, setSelectedItemName] = useState("");
 
-  // 🔹 Redirect if not logged in
   useEffect(() => {
-    if (!user) {
+    if (!loading && !user) {
       router.push("/week-10");
     }
-  }, [user, router]);
+  }, [user, loading, router]);
 
-  // 🔹 Load items from Firestore
   async function loadItems() {
     if (!user) return;
 
@@ -37,14 +35,12 @@ export default function Page() {
     setItems(data as ItemType[]);
   }
 
-  // 🔹 Run when user loads
   useEffect(() => {
     if (user) {
       loadItems();
     }
   }, [user]);
 
-  // 🔹 Add item to Firestore
   async function handleAddItem(newItem: {
     name: string;
     quantity: number;
@@ -62,31 +58,32 @@ export default function Page() {
     setItems([...items, itemToAdd]);
   }
 
-  // 🔹 Clean name for API
   function cleanItemName(text: string) {
     let cleaned = text.split(",")[0];
     cleaned = cleaned.replace(/[^\w\s]/g, "");
     return cleaned.trim().toLowerCase();
   }
 
-  // 🔹 Select item → meal ideas
   function handleItemSelect(item: ItemType) {
     const ingredient = cleanItemName(item.name);
     setSelectedItemName(ingredient);
   }
 
-  // 🔹 Logout + redirect
   async function handleLogout() {
     await firebaseSignOut();
     router.push("/week-10");
   }
 
-  // 🔹 Prevent UI flash
-  if (!user) return null;
+  if (loading) {
+    return <main className="p-6">Loading...</main>;
+  }
+
+  if (!user) {
+    return null;
+  }
 
   return (
     <main className="p-6">
-      {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Shopping List</h1>
         <button
@@ -97,20 +94,16 @@ export default function Page() {
         </button>
       </div>
 
-      {/* User Info */}
       <p className="mb-6">
         Welcome, {user.displayName} ({user.email})
       </p>
 
-      {/* Layout */}
       <div className="flex flex-col md:flex-row gap-6">
-        {/* Left */}
         <div className="md:w-1/2 space-y-6">
           <NewItem onAddItem={handleAddItem} />
           <ItemList items={items} onItemSelect={handleItemSelect} />
         </div>
 
-        {/* Right */}
         <div className="md:w-1/2">
           <MealIdeas ingredient={selectedItemName} />
         </div>

@@ -12,6 +12,7 @@ import { auth } from "./firebase";
 
 type AuthContextType = {
   user: User | null;
+  loading: boolean;
   gitHubSignIn: () => Promise<unknown>;
   firebaseSignOut: () => Promise<void>;
 };
@@ -20,6 +21,7 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthContextProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const gitHubSignIn = () => {
     const provider = new GithubAuthProvider();
@@ -33,13 +35,14 @@ export function AuthContextProvider({ children }: { children: React.ReactNode })
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
+      setLoading(false);
     });
 
     return () => unsubscribe();
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, gitHubSignIn, firebaseSignOut }}>
+    <AuthContext.Provider value={{ user, loading, gitHubSignIn, firebaseSignOut }}>
       {children}
     </AuthContext.Provider>
   );
